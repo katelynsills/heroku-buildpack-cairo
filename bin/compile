@@ -18,6 +18,9 @@ mkdir -p /tmp/cairo-1.15.6 \
     && wget -qO- --no-check-certificate https://cairographics.org/snapshots/cairo-1.15.6.tar.xz \
     | tar -xJC /tmp/ \
     && cd /tmp/cairo-1.15.6 \
+    && ./configure \
+    && make
+
 
 export CPPPATH="/tmp/cairo-1.15.6/include:$CPPPATH"
 export CPATH="/tmp/cairo-1.15.6/include:$CPATH"
