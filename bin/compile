@@ -1,14 +1,36 @@
 #!/usr/bin/env bash
 
+# Usage:
+#
+#     $ bin/compile <build-dir> <cache-dir> <env-path>
+
 # Fail fast and fail hard.
 set -eo pipefail
+
+# Paths.
+BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
+ROOT_DIR=$(dirname $BIN_DIR)
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
 
 mkdir -p /tmp/cairo-1.15.6 \
     && wget -qO- --no-check-certificate https://cairographics.org/snapshots/cairo-1.15.6.tar.xz \
     | tar -xJC /tmp/ \
     && cd /tmp/cairo-1.15.6 \
-    && ./configure \
-    && make \
-    && make install
 
-export LD_LIBRARY_PATH=/usr/local/lib/:$LD_LIBRARY_PATH
+export CPPPATH="/tmp/cairo-1.15.6/include:$CPPPATH"
+export CPATH="/tmp/cairo-1.15.6/include:$CPATH"
+export LIBRARY_PATH="/tmp/cairo-1.15.6/lib:$LIBRARY_PATH"
+export LD_LIBRARY_PATH="/tmp/cairo-1.15.6/lib:$LD_LIBRARY_PATH"
+
+echo "-----> Configuring build environment"
+
+cat <<EOF > export
+export PATH="$PATH:\$PATH"
+export LD_LIBRARY_PATH="\$LD_LIBRARY_PATH:$LD_LIBRARY_PATH"
+export LIBRARY_PATH="\$LIBRARY_PATH:$LIBRARY_PATH"
+export PKG_CONFIG_PATH="\$PKG_CONFIG_PATH:$PKG_CONFIG_PATH"
+export CPPPATH="\$CPPPATH:$CPPPATH"
+export CPATH="\$CPATH:$CPATH"
+EOF
